@@ -1,6 +1,6 @@
 /*
 *	Spitter Acid Damage
-*	Copyright (C) 2021 Silvers
+*	Copyright (C) 2022 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"1.11"
+#define PLUGIN_VERSION 		"1.12"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,9 @@
 
 ========================================================================================
 	Change Log:
+
+1.12 (25-May-2022)
+	- Changed the description of "l4d2_spitter_acid_damage" cvar and some default values due to the logic being inverted from the previous description. Thanks to "VYRNACH_GAMING" for reporting.
 
 1.11 (14-Dec-2021)
 	- Fixed infected hurt sounds when "l4d2_spitter_acid_dmg_special" or "l4d2_spitter_acid_dmg_self" was set to "0.0". Thanks to "KoMiKoZa" for reporting.
@@ -179,9 +182,9 @@ public void OnPluginStart()
 	g_hCvarDmgCommon = CreateConVar(	"l4d2_spitter_acid_dmg_common",		"5.0",			"Damage dealt to common infected. Can use a ratio instead by changing l4d2_spitter_acid_damage.", CVAR_FLAGS);
 	g_hCvarDmgSelf = CreateConVar(		"l4d2_spitter_acid_dmg_self",		"0.0",			"Damage dealt to self owner of acid. Can use a ratio instead by changing l4d2_spitter_acid_damage.", CVAR_FLAGS);
 	g_hCvarDmgSpecial = CreateConVar(	"l4d2_spitter_acid_dmg_special",	"8.0",			"Damage dealt to special infected. Can use a ratio instead by changing l4d2_spitter_acid_damage.", CVAR_FLAGS);
-	g_hCvarDmgSurvivor = CreateConVar(	"l4d2_spitter_acid_dmg_survivor",	"1.0",			"Damage dealt to survivors (games default is 1.0 with l4d2_spitter_acid_damage 2).", CVAR_FLAGS);
-	g_hCvarDmgSurvBots = CreateConVar(	"l4d2_spitter_acid_dmg_bots",		"1.0",			"Damage dealt to survivor bots (games default is 1.0 with l4d2_spitter_acid_damage 2).", CVAR_FLAGS);
-	g_hCvarDamage = CreateConVar(		"l4d2_spitter_acid_damage",			"2",			"Apply full damage value from dmg_* cvars. Or: use a ratio of the games scaled damage on: 1=Common. 2=Survivors (default). 4=Special. 8=Self. 15=All. Add numbers together.", CVAR_FLAGS);
+	g_hCvarDmgSurvivor = CreateConVar(	"l4d2_spitter_acid_dmg_survivor",	"1.0",			"Damage dealt to survivors (games default is 1.0 with l4d2_spitter_acid_damage omitting a value of 2).", CVAR_FLAGS);
+	g_hCvarDmgSurvBots = CreateConVar(	"l4d2_spitter_acid_dmg_bots",		"1.0",			"Damage dealt to survivor bots (games default is 1.0 with l4d2_spitter_acid_damage omitting a value of 2).", CVAR_FLAGS);
+	g_hCvarDamage = CreateConVar(		"l4d2_spitter_acid_damage",			"13",			"Omitted values scale the damage the game inflicts. Or: Apply full damage value from dmg_* cvars. on: 1=Common. 2=Survivors (default). 4=Special. 8=Self. 15=All. Add numbers together.", CVAR_FLAGS);
 	g_hCvarEffects = CreateConVar(		"l4d2_spitter_acid_effects",		"5",			"Displays a particle when hurting. 0=Off, 1=Common Infected, 2=Survivors, 4=Special Infected, 8=Self. 15=All. Add numbers together.", CVAR_FLAGS);
 	g_hCvarExplode = CreateConVar(		"l4d2_spitter_acid_explosives",		"3",			"Allow acid to ignite explosives: 0=Off, 1=GasCans, 2=Firework Crates, 4=Oxygen Tank, 8=Propane Tank, 15=All. Add numbers together.", CVAR_FLAGS);
 	g_hCvarExplodes = CreateConVar(		"l4d2_spitter_acid_explode",		"0",			"Which explosives should explode, otherwise they will ignite first: 0=All ignite, 1=Firework Crates, 2=Oxygen Tank, 4=Propane Tank, 7=All explode. Add numbers together.", CVAR_FLAGS);
