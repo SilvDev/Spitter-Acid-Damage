@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"1.12"
+#define PLUGIN_VERSION 		"1.13"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,9 @@
 
 ========================================================================================
 	Change Log:
+
+1.13 (20-Sep-2022)
+	- Changed the way "l4d2_spitter_acid_grace" prevents damage, to also prevent the sound and movement slowdown.
 
 1.12 (25-May-2022)
 	- Changed the description of "l4d2_spitter_acid_damage" cvar and some default values due to the logic being inverted from the previous description. Thanks to "VYRNACH_GAMING" for reporting.
@@ -243,12 +246,12 @@ public void OnConfigsExecuted()
 	IsAllowed();
 }
 
-public void ConVarChanged_Allow(Handle convar, const char[] oldValue, const char[] newValue)
+void ConVarChanged_Allow(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	IsAllowed();
 }
 
-public void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
+void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	GetCvars();
 }
@@ -354,7 +357,7 @@ bool IsAllowedGameMode()
 	return true;
 }
 
-public void OnGamemode(const char[] output, int caller, int activator, float delay)
+void OnGamemode(const char[] output, int caller, int activator, float delay)
 {
 	if( strcmp(output, "OnCoop") == 0 )
 		g_iCurrentMode = 1;
@@ -371,7 +374,7 @@ public void OnGamemode(const char[] output, int caller, int activator, float del
 // ====================================================================================================
 //					DETOUR
 // ====================================================================================================
-public MRESReturn CanHarm(Handle hReturn, Handle hParams)
+MRESReturn CanHarm(Handle hReturn, Handle hParams)
 {
 	int entity = DHookGetParam(hParams, 1);
 
@@ -461,7 +464,7 @@ public MRESReturn CanHarm(Handle hReturn, Handle hParams)
 	return MRES_Ignored;
 }
 
-public Action OnTakeDamage(int entity, int &attacker, int &inflictor, float &damage, int &damagetype)
+Action OnTakeDamage(int entity, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
 	// if( damagetype == (DMG_ENERGYBEAM | DMG_RADIATION) || damagetype == (DMG_ENERGYBEAM | DMG_RADIATION | DMG_PREVENT_PHYSICS_FORCE) )
 	// 1024 (1<<10) DMG_ENERGYBEAM
@@ -473,7 +476,9 @@ public Action OnTakeDamage(int entity, int &attacker, int &inflictor, float &dam
 		// Grace period
 		if( inflictor >= 0 && inflictor < 2048 && GetGameTime() < g_fLastHit[inflictor] )
 		{
-			return Plugin_Handled;
+			damagetype = 0;
+			damage = 0.0;
+			return Plugin_Changed;
 		}
 
 		// Damage logic
@@ -620,11 +625,12 @@ void PrecacheParticle(const char[] sEffectName)
 }
 
 
+
 // ====================================================================================================
 //					ALTERNATIVE METHOD
 // ====================================================================================================
 /*
-public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	for( int i = 0; i < 2048; i++ )
 		g_fLastHurt[i] = 0.0;
@@ -638,7 +644,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 	}
 }
 
-public Action TimerThink(Handle timer, any entity)
+Action TimerThink(Handle timer, any entity)
 {
 	#if BENCHMARK
 	StartProfiling(g_Profiler);
